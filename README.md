@@ -1,2 +1,2 @@
 # StratosStores
-Custom Roblox Datastores management system.
+Custom Roblox datastores management system.
