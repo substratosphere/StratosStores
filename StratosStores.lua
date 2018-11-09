@@ -113,16 +113,6 @@ local function CopyTable(o)
 	return copy
 end
 
---[[ Table Count ]]--
---Returns the size of a table
-local function TableCount(tab)
-	local count=0
-	for _ in pairs (tab) do
-		count=count+1
-	end
-	return count
-end
-
 --[[ Key Exists ]]--
 --Checks the key exists.
 local function KeyExists(tab,keys)
@@ -449,7 +439,7 @@ function api.PlayerRemoved(p)
 			warn("Saved "..name.."'s data on leave.")
 		end
 		
-		while (TableCount(isSaving[id])>1) do
+		while #isSaving[id]>1 do
 			wait(1) --Is data was already saving via alt. method, it waits for it to save!
 		end
 	else
