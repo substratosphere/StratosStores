@@ -116,11 +116,15 @@ end
 --[[ Table Count ]]--
 --Returns the size of a table
 local function TableCount(tab)
-	local count=0
-	for _ in pairs (tab) do
-		count=count+1
+	if (next(tab) and #tab<1) then
+		local count=0
+		for _ in pairs (tab) do
+			count=count+1
+		end
+		return count
+	else
+		return #tab
 	end
-	return count
 end
 
 --[[ Key Exists ]]--
