@@ -151,7 +151,11 @@ end
 local function HalfMatch(n,o) --To match,loaded
 	o=o or {}
 	for i,v in pairs (n) do
-		o[i]=(type(v)=="table" and HalfMatch(v,o[i])) or o[i] or v
+		if (type(v)=="table") then
+			o[i]=halfMatch(v,o[i])
+		elseif (o[i]==nil) then
+			o[i]=v
+		end
 	end
 	return o
 end
