@@ -231,6 +231,16 @@ function api.ServerSave(s,key,data,tab)
 		wait(math.clamp(6-(tick()-lastSave[s]),0,6))
 	end
 	
+	--Set saving status
+	if (isSaving[key]) then
+		if (isSaving[key].disabled) and not (tab.leaving) then
+			warn("Saving is disabled!")
+			return
+		elseif (data) or (update) then
+			isSaving[key][s]=true
+		end
+	end
+	
 	--Datastore saving/loading function
 	local function sync()
 		local key=tostring(key)..OBSCURE --Obscures the key.
@@ -251,11 +261,13 @@ function api.ServerSave(s,key,data,tab)
 	end
 	
 	local attempt,worked,dataLoad=0,false
+	local tl=4
 	repeat
 		worked,dataLoad=pcall(sync)
 		if not (worked) then
 			print("Datastores",actionType,"error ("..dataLoad..")")
-			wait(1)
+			wait(tl)
+			tl=tl*2
 		end
 		attempt=attempt+1
 	until worked or attempt>=3
@@ -378,7 +390,7 @@ function api.SafeSave(DS,p,func)
 				warn("Save not verified.")
 			end
 		else
-			print(p,"requestsed save but could not fetch data!")
+			print(p,"requested save but could not fetch data!")
 		end
 	else
 		print(p,"requested save but not added to network!")
@@ -431,10 +443,8 @@ end
 function api.PlayerRemoved(p)
 	local data=api.players[p]
 	local id,name=p.UserId,p.Name
+	isSaving[id].disabled=true --Notifies that all save requests are to be rejected.
 	if (data) and (data.canSave) then --Dont need to save anything in the queue because variables have been locally updated.
-		
-		isSaving[id].disabled=true --Notifies that all save requests are to be rejected.
-		
 		local queuedData=savequeue[id] or {}
 		
 		for i,v in pairs (Data) do
@@ -448,7 +458,7 @@ function api.PlayerRemoved(p)
 			for i,v in pairs (queuedData) do
 				if (i) and (v) then
 					data.dataLast[i]=tick()-7 --Will force it to save regardless of throttling.
-					local w=api.ServerSave(i,id,v)
+					local w=api.ServerSave(i,id,v,{leaving=true})
 					if not (w) then
 						print("Save on leave ("..i..") failed for",name.."!")
 					end
