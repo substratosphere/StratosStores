@@ -220,9 +220,6 @@ function api.ServerSave(s,key,data,tab)
 				return
 			end
 		end
-		if (isSaving[key]) then --Sets that it is currently saving.
-			isSaving[key][s]=true
-		end
 	end
 	
 	--Forces a delay to prevent throttling
